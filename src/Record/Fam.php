@@ -47,9 +47,21 @@ class Fam extends \Gedcom\Record implements Noteable, Sourceable, Objectable
 
     protected $_obje = [];
 
-    public function addEven($even)
+    public function addEven($recordType, $even)
     {
-        $this->_even[$even->getType()] = $even;
+        if (array_key_exists($recordType, $this->_even)) {
+            $current_even = $this->_even[$recordType];
+            $this->_even[$recordType] = [
+                $current_even,
+                $even,
+            ];
+
+            return $this;
+        }
+
+        $this->_even[$recordType] = $even;
+
+        return $this;
     }
 
     /**
@@ -61,13 +73,15 @@ class Fam extends \Gedcom\Record implements Noteable, Sourceable, Objectable
     }
 
     /**
-     * @return void|\Gedcom\Record\Fam\Even
+     * @return void|\Gedcom\Record\Fam\Even|\Gedcom\Record\Fam\Even[]
      */
     public function getEven($key = '')
     {
         if (isset($this->_even[strtoupper((string) $key)])) {
             return $this->_even[strtoupper((string) $key)];
         }
+
+        return [];
     }
 
     public function addSlgs($slgs = [])
